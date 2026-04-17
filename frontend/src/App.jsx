@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [url, setUrl] = useState("");
@@ -15,29 +15,35 @@ function App() {
     setLoading(true);
 
     try {
-      console.log("Sending request to:", `${API_BASE_URL}/shorten`);
+      console.log("API URL:", API_BASE_URL);
 
-      const res = await axios.post(`${API_BASE_URL}/shorten`, {
-        originalUrl: url,
-      });
+      if (!API_BASE_URL) {
+        throw new Error("API URL not set in environment variables");
+      }
 
-      console.log("Response:", res.data);
+      const res = await axios.post(
+        `${API_BASE_URL}/shorten`, // ✅ change to /api/shorten if needed
+        {
+          originalUrl: url,
+        }
+      );
 
       const newShortUrl = res.data.shortUrl;
 
       if (!newShortUrl) {
-        throw new Error("No shortUrl returned");
+        throw new Error("No short URL returned from backend");
       }
 
       setShortUrl(newShortUrl);
       setCopied(false);
 
     } catch (err) {
-      console.error("ERROR:", err?.response || err.message);
+      console.error("ERROR:", err);
 
       alert(
         err?.response?.data?.error ||
-        "Backend not reachable or wrong URL"
+        err.message ||
+        "Backend not reachable"
       );
     } finally {
       setLoading(false);
@@ -52,7 +58,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-6">
-      <h1 className="text-4xl font-bold mb-4 text-center">
+      <h1 className="text-4xl font-bold text-center">
         URL SHORTENER
       </h1>
 
@@ -76,13 +82,13 @@ function App() {
 
       {shortUrl && (
         <div className="flex flex-col items-center max-w-3xl w-full">
-          <p className="font-medium mb-2">Your short link:</p>
+          <p className="font-medium mt-4">Your short link:</p>
 
           <a
             className="link link-primary break-all"
+            href={shortUrl}
             target="_blank"
             rel="noopener noreferrer"
-            href={shortUrl}
           >
             {shortUrl}
           </a>
@@ -96,7 +102,7 @@ function App() {
             {copied ? "Copied!" : "Copy"}
           </button>
 
-          {/* ✅ FIXED QR */}
+          {/* QR Code */}
           <div className="bg-white p-4 rounded-lg shadow mt-6">
             <p className="mb-2 text-center font-semibold text-gray-800">
               Scan QR Code:

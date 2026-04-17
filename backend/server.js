@@ -1,44 +1,33 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import urlRoutes from './routes/url.js';
 
 dotenv.config();
 
 const app = express();
 
+// middleware
 app.use(cors());
 app.use(express.json());
 
-// ✅ TEST ROUTE
-app.get("/test", (req, res) => {
-  res.send("API working ✅");
+// routes
+app.use('/api', urlRoutes);
+
+// test route
+app.get('/', (req, res) => {
+  res.send('API is running...');
 });
 
-// ✅ ROOT ROUTE
-app.get("/", (req, res) => {
-  res.send("Server working ✅");
-});
+// DB connect
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
-// ✅ IMPORTANT: use routes correctly
-app.use("/api", urlRoutes);
-
-// ❗ fallback route (this was missing / causing confusion)
-app.use((req, res) => {
-  res.status(404).send("Route not found ❌");
-});
-
+// PORT FIX (IMPORTANT)
 const PORT = process.env.PORT || 8000;
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-  console.log('Connected to MongoDB');
-
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-})
-.catch((err) => {
-  console.error('Error connecting to MongoDB', err);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
