@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
-// ✅ CREATE SHORT URL
+// CREATE SHORT URL
 router.post('/shorten', async (req, res) => {
   try {
     const { originalUrl } = req.body;
@@ -22,17 +22,15 @@ router.post('/shorten', async (req, res) => {
 
     const normalizedUrl = validUrl.href;
 
-    // check existing
     const existing = await Url.findOne({ originalUrl: normalizedUrl });
 
     if (existing) {
       return res.json({
         shortId: existing.shortId,
-        shortUrl: `${process.env.BASE_URL}/${existing.shortId}` // ✅ FIXED
+        shortUrl: `${process.env.BASE_URL}/${existing.shortId}`
       });
     }
 
-    // generate unique id
     let shortId;
     let exists = true;
 
@@ -49,7 +47,7 @@ router.post('/shorten', async (req, res) => {
 
     return res.json({
       shortId: newUrl.shortId,
-      shortUrl: `${process.env.BASE_URL}/${newUrl.shortId}` // ✅ FIXED
+      shortUrl: `${process.env.BASE_URL}/${newUrl.shortId}`
     });
 
   } catch (err) {
@@ -58,8 +56,7 @@ router.post('/shorten', async (req, res) => {
   }
 });
 
-
-// ✅ REDIRECT SHORT URL (NO CHANGE)
+// REDIRECT
 router.get('/:shortId', async (req, res) => {
   try {
     const { shortId } = req.params;
