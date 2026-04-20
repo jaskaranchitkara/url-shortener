@@ -1,16 +1,10 @@
-
 import express from 'express';
 import Url from '../models/url.js';
 import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
-// ✅ TEST ROUTE (VERY IMPORTANT for debugging)
-router.get('/test', (req, res) => {
-  res.send('API working ✅');
-});
-
-// ✅ CREATE SHORT URL
+// CREATE SHORT URL
 router.post('/shorten', async (req, res) => {
   try {
     const { originalUrl } = req.body;
@@ -33,7 +27,7 @@ router.post('/shorten', async (req, res) => {
     if (existing) {
       return res.json({
         shortId: existing.shortId,
-        shortUrl: `${process.env.BASE_URL}/api/${existing.shortId}` // ✅ FIXED
+        shortUrl: `${process.env.BASE_URL}/${existing.shortId}`
       });
     }
 
@@ -53,7 +47,7 @@ router.post('/shorten', async (req, res) => {
 
     return res.json({
       shortId: newUrl.shortId,
-      shortUrl: `${process.env.BASE_URL}/api/${newUrl.shortId}` // ✅ FIXED
+      shortUrl: `${process.env.BASE_URL}/${newUrl.shortId}`
     });
 
   } catch (err) {
@@ -62,7 +56,7 @@ router.post('/shorten', async (req, res) => {
   }
 });
 
-// ✅ REDIRECT (ALWAYS LAST)
+// REDIRECT
 router.get('/:shortId', async (req, res) => {
   try {
     const { shortId } = req.params;

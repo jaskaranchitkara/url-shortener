@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 
-// ✅ ENV variable (from Vercel)
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function App() {
@@ -17,7 +16,7 @@ function App() {
 
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/api/shorten`,
+        `${API_BASE_URL}/api/shorten`, // ✅ IMPORTANT
         { originalUrl: url }
       );
 
@@ -31,13 +30,15 @@ function App() {
       setCopied(false);
 
     } catch (err) {
-      console.error(err);
+      console.error("FULL ERROR:", err);
 
-      alert(
+      const errorMessage =
         err?.response?.data?.error ||
+        JSON.stringify(err?.response?.data) ||
         err.message ||
-        "Backend not reachable"
-      );
+        "Something went wrong";
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -95,7 +96,6 @@ function App() {
             {copied ? "Copied!" : "Copy"}
           </button>
 
-          {/* QR Code */}
           <div className="bg-white p-4 rounded-lg shadow mt-6">
             <p className="mb-2 text-center font-semibold text-gray-800">
               Scan QR Code:
