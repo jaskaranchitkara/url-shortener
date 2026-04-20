@@ -4,7 +4,12 @@ import { nanoid } from 'nanoid';
 
 const router = express.Router();
 
-// CREATE SHORT URL
+// ✅ TEST ROUTE
+router.get('/test', (req, res) => {
+  res.send('API working ✅');
+});
+
+// ✅ CREATE SHORT URL
 router.post('/shorten', async (req, res) => {
   try {
     const { originalUrl } = req.body;
@@ -56,7 +61,30 @@ router.post('/shorten', async (req, res) => {
   }
 });
 
-// REDIRECT
+// ✅ GET STATS (MOVE THIS UP)
+router.get('/stats/:shortId', async (req, res) => {
+  try {
+    const { shortId } = req.params;
+
+    const url = await Url.findOne({ shortId });
+
+    if (!url) {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    res.json({
+      originalUrl: url.originalUrl,
+      shortId: url.shortId,
+      clicks: url.clicks || 0,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ✅ REDIRECT (KEEP THIS LAST ALWAYS)
 router.get('/:shortId', async (req, res) => {
   try {
     const { shortId } = req.params;

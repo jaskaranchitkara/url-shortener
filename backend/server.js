@@ -8,26 +8,20 @@ dotenv.config();
 
 const app = express();
 
-// middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// routes
-app.use('/api', urlRoutes);
+// Routes
+app.use('/', urlRoutes);
 
-// test route
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
-
-// DB connect
+// MongoDB connect
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch(err => console.error(err));
 
-// PORT
+// Start server
 const PORT = process.env.PORT || 8000;
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT} 🚀`);
 });
