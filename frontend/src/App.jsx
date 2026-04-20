@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
+// ✅ ENV variable (from Vercel)
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 function App() {
@@ -15,30 +16,22 @@ function App() {
     setLoading(true);
 
     try {
-      console.log("API URL:", API_BASE_URL);
-
-      if (!API_BASE_URL) {
-        throw new Error("API URL not set in environment variables");
-      }
-
       const res = await axios.post(
-        `${API_BASE_URL}/shorten`, // ✅ change to /api/shorten if needed
-        {
-          originalUrl: url,
-        }
+        `${API_BASE_URL}/api/shorten`,
+        { originalUrl: url }
       );
 
       const newShortUrl = res.data.shortUrl;
 
       if (!newShortUrl) {
-        throw new Error("No short URL returned from backend");
+        throw new Error("No short URL returned");
       }
 
       setShortUrl(newShortUrl);
       setCopied(false);
 
     } catch (err) {
-      console.error("ERROR:", err);
+      console.error(err);
 
       alert(
         err?.response?.data?.error ||
