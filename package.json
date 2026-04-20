@@ -3,6 +3,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "mongoose": "^9.4.1",
-    "nanoid": "^5.1.7"
+    "nanoid": "^5.1.7",
+    "react-qr-code": "^2.0.18"
   }
 }
