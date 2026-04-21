@@ -1,33 +1,50 @@
 import { useState } from "react";
 import axios from "axios";
-import QRCode from "react-qr-code";
+
+// ✅ API from environment
+const API = import.meta.env.VITE_API_URL;
 
 function App() {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const handleShorten = async () => {
+    if (!url) {
+      alert("Please enter a URL");
+      return;
+    }
+
     try {
-      const res = await axios.post("http://localhost:8000/shorten", {
+      const res = await axios.post(`${API}/shorten`, {
         originalUrl: url,
       });
 
       setShortUrl(res.data.shortUrl);
+      setCopied(false);
     } catch (err) {
+      console.error(err);
       alert("Error shortening URL");
     }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shortUrl);
+    setCopied(true);
+
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200">
       <div className="card w-96 bg-base-100 shadow-xl p-6">
         <h1 className="text-2xl font-bold mb-4 text-center">
-          URL Shortener
+          URL Shortener 🚀
         </h1>
 
         <input
           type="text"
-          placeholder="Enter URL"
+          placeholder="Enter URL (https://...)"
           className="input input-bordered w-full mb-4"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
@@ -39,7 +56,7 @@ function App() {
 
         {shortUrl && (
           <div className="mt-4 text-center">
-            <p className="text-sm mb-1">Short URL:</p>
+            <p className="text-sm mb-2">Short URL:</p>
 
             <a
               href={shortUrl}
@@ -50,21 +67,9 @@ function App() {
               {shortUrl}
             </a>
 
-            {/* COPY BUTTON */}
-            <button
-              className="btn btn-secondary w-full mt-3"
-              onClick={() => {
-                navigator.clipboard.writeText(shortUrl);
-                alert("Copied!");
-              }}
-            >
-              Copy Link
+            <button className="btn btn-sm mt-2" onClick={handleCopy}>
+              {copied ? "Copied ✅" : "Copy"}
             </button>
-
-            {/* QR CODE */}
-            <div className="mt-4 flex justify-center">
-              <QRCode value={shortUrl} size={150} />
-            </div>
           </div>
         )}
       </div>
